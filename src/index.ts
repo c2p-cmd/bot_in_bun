@@ -66,7 +66,7 @@ otto.on(Events.MessageCreate, async (message) => {
 
 try {
   console.log("Starting server");
-  // await otto.login(process.env["API_KEY"]);
+  await otto.login(process.env["API_KEY"]);
 
   Bun.serve({
     fetch(req: Request): Response | Promise<Response> {

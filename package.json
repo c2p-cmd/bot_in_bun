@@ -1,6 +1,6 @@
 {
   "name": "bot_in_bun",
-  "module": "src/*",
+  "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "build" : "bun run src/index.ts"
