@@ -1,11 +1,8 @@
 import {
   Client,
   Events,
-  Message,
-  ButtonBuilder,
   GatewayIntentBits,
   EmbedBuilder,
-  Embed,
 } from "discord.js";
 import {
   type RedditParams,
@@ -40,22 +37,30 @@ otto.on(Events.MessageCreate, async (message) => {
 
     if (text.startsWith("!otto fetch")) {
       let args = text.split(" ");
-      if (args.length !== 4) {
+
+      if (args.length < 3) {
         let embed = new EmbedBuilder()
-          .setTitle("Invalid command format. Use")
-          .addFields({
-            name: "command",
-            value: "!otto fetch [subRedditName] [count]",
-          });
+          .setTitle("Invalid command format.")
+          .addFields(
+            {
+              name: "use command with count",
+              value: "!otto fetch [subRedditName] [count]",
+            },
+            {
+              name: "use command or without",
+              value: "!otto fetch [subRedditName]",
+            }
+          );
 
         await message.reply({ embeds: [embed] });
         return;
       }
 
       let name = args[2];
-      var count = parseInt(args[3], 10);
+      var count = args.length === 4 ? parseInt(args[3], 10) : 1;
       count = isNaN(count) ? 1 : count;
 
+      await message.channel.sendTyping();
       let response = await gimmePhoto({
         subReddit: name,
         count: count,
@@ -68,11 +73,13 @@ otto.on(Events.MessageCreate, async (message) => {
         return;
       }
 
+      console.log(response);
+      console.log(typeof response);
+
       let redditResponses: [RedditResponse] = response;
-      let embed = redditResponses.map((redditResponse) => {
+      let embeds = redditResponses.map((redditResponse) => {
         let embed = new EmbedBuilder()
           .setTitle(redditResponse.title)
-          .setImage(redditResponse.preview[0])
           .setImage(redditResponse.preview[redditResponse.preview.length - 1]);
 
         if (redditResponse.nsfw || redditResponse.spoiler) {
@@ -81,11 +88,11 @@ otto.on(Events.MessageCreate, async (message) => {
         return embed;
       });
 
-      await message.reply({ embeds: embed });
+      await message.channel.send({ embeds: embeds });
     }
   } catch (error) {
     console.error("An error occurred:", error);
-    await message.reply("Something went wrong! 🤖");
+    await message.reply(`Something went wrong! 🤖\n${error}`);
   }
 });
 
