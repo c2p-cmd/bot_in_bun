@@ -1,9 +1,9 @@
 {
   "name": "bot_in_bun",
   "type": "module",
+  "module": "src/",
   "devDependencies": {
-    "@types/bun": "latest",
-    "bun-vercel": "^1.0.0-alpha.5"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -12,6 +12,7 @@
     "discord.js": "^14.15.3"
   },
   "scripts": {
-    "build" : "bun-vercel ./src/index.ts"
+    "build" : " ",
+    "start": "bun run ."
   }
 }
