@@ -22,7 +22,7 @@ otto.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
   try {
-    let text = message.content;
+    let text = message.content.toLowerCase();
     if (text.toString().length == 0) {
       await message.reply("Empty message?, Error bro!");
       return;
