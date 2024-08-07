@@ -1,8 +1,4 @@
-import {
-  Client,
-  Events,
-  GatewayIntentBits,
-} from "discord.js";
+import { Client, Events, GatewayIntentBits } from "discord.js";
 import { GimmePhotoCommand } from "./gimmephoto";
 import { EmbedBuilder } from "@discordjs/builders";
 
@@ -34,18 +30,18 @@ otto.on(Events.MessageCreate, async (message) => {
 
     if (args.length < 3) {
       let embed = new EmbedBuilder()
-      .setTitle("Hello I am otto. Pleased to meet you")
-      .setDescription("Please try some of these commands")
-      .addFields(
-        {
-          name: "Get Single Photo",
-          value: "!otto gimme [subReddit]"
-        },
-        {
-          name: "Get Multiple Photos",
-          value: "!otto gimme [subReddit] [count]"
-        }
-      );
+        .setTitle("Hello I am otto. Pleased to meet you")
+        .setDescription("Please try some of these commands")
+        .addFields(
+          {
+            name: "Get Single Photo",
+            value: "!otto gimme [subReddit]",
+          },
+          {
+            name: "Get Multiple Photos",
+            value: "!otto gimme [subReddit] [count]",
+          }
+        );
 
       await message.channel.send({ embeds: [embed] });
       return;
@@ -59,7 +55,7 @@ otto.on(Events.MessageCreate, async (message) => {
       new GimmePhotoCommand().execute({
         name: args[2],
         count: count,
-        message: message
+        message: message,
       });
     }
   } catch (error) {
@@ -68,4 +64,20 @@ otto.on(Events.MessageCreate, async (message) => {
   }
 });
 
-otto.login(process.env["API_KEY"]);
+try {
+  console.log("Starting server");
+  await otto.login(process.env["API_KEY"]);
+
+  Bun.serve({
+    fetch(req: Request): Response | Promise<Response> {
+      let message = {
+        "message" : "Otto lives!",
+        "link" : "https://discord.com/oauth2/authorize?client_id=1270675148680335410&permissions=0&scope=bot%20applications.commands"
+      };
+      return Response.json(message);
+    },
+    port: 3000,
+  });
+} catch {
+  console.error("Server ain't running");
+}
