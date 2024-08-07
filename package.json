@@ -2,9 +2,6 @@
   "name": "bot_in_bun",
   "module": "src/index.ts",
   "type": "module",
-  "scripts": {
-    "build" : "bun run src/index.ts"
-  },
   "devDependencies": {
     "@types/bun": "latest"
   },
