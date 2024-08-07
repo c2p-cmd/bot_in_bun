@@ -8,4 +8,4 @@ RUN bun install
 
 COPY . .
 
-RUN ["bun", "run", "index.ts"]
+RUN ["bun", "run", "src/index.ts"]
