@@ -2,14 +2,9 @@ import {
   Client,
   Events,
   GatewayIntentBits,
-  EmbedBuilder,
 } from "discord.js";
-import {
-  type RedditParams,
-  type RedditResponse,
-  type RedditError,
-  gimmePhoto,
-} from "./api";
+import { GimmePhotoCommand } from "./gimmephoto";
+import { EmbedBuilder } from "@discordjs/builders";
 
 let otto = new Client({
   intents: [
@@ -35,60 +30,37 @@ otto.on(Events.MessageCreate, async (message) => {
 
     if (!text.startsWith("!otto")) return;
 
-    if (text.startsWith("!otto fetch")) {
-      let args = text.split(" ");
+    let args = text.split(" ");
 
-      if (args.length < 3) {
-        let embed = new EmbedBuilder()
-          .setTitle("Invalid command format.")
-          .addFields(
-            {
-              name: "use command with count",
-              value: "!otto fetch [subRedditName] [count]",
-            },
-            {
-              name: "use command or without",
-              value: "!otto fetch [subRedditName]",
-            }
-          );
-
-        await message.reply({ embeds: [embed] });
-        return;
-      }
-
-      let name = args[2];
-      var count = args.length === 4 ? parseInt(args[3], 10) : 1;
-      count = isNaN(count) ? 1 : count;
-
-      await message.channel.sendTyping();
-      let response = await gimmePhoto({
-        subReddit: name,
-        count: count,
-      });
-
-      if ("code" in response && "message" in response) {
-        await message.reply(
-          `Error ${response.message} with code ${response.code}`
-        );
-        return;
-      }
-
-      console.log(response);
-      console.log(typeof response);
-
-      let redditResponses: [RedditResponse] = response;
-      let embeds = redditResponses.map((redditResponse) => {
-        let embed = new EmbedBuilder()
-          .setTitle(redditResponse.title)
-          .setImage(redditResponse.preview[redditResponse.preview.length - 1]);
-
-        if (redditResponse.nsfw || redditResponse.spoiler) {
-          embed.setColor(0xe0300f);
+    if (args.length < 3) {
+      let embed = new EmbedBuilder()
+      .setTitle("Hello I am otto. Pleased to meet you")
+      .setDescription("Please try some of these commands")
+      .addFields(
+        {
+          name: "Get Single Photo",
+          value: "!otto gimme [subReddit]"
+        },
+        {
+          name: "Get Multiple Photos",
+          value: "!otto gimme [subReddit] [count]"
         }
-        return embed;
-      });
+      );
 
-      await message.channel.send({ embeds: embeds });
+      await message.channel.send({ embeds: [embed] });
+      return;
+    }
+
+    if (text.startsWith("!otto gimme") && args.length <= 4) {
+      await message.channel.sendTyping();
+
+      var count = parseInt(args[3]) ?? 1;
+      count = isNaN(count) ? 1 : count;
+      new GimmePhotoCommand().execute({
+        name: args[2],
+        count: count,
+        message: message
+      });
     }
   } catch (error) {
     console.error("An error occurred:", error);
